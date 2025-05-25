@@ -29,7 +29,7 @@
 - 일정 내용과 작성자명을 변경하는 기능
 - Method : Patch
 - URL : /api/tasks/{id}
-- Parameter : id (@PathVariabl), HTML form (@ModelAttribute)
+- Parameter : id (@PathVariable), HTML form (@ModelAttribute)
 - Response : 단건 응답 정보 (수정된 단건 정보) 
 - Status code : 200 OK 
 - 기타
@@ -38,7 +38,7 @@
 	- 일정을 등록할 때와 동일한 password 입력시에만, 수정이 가능
 
 **선택한 일정 삭제**
-- Method : Patch
+- Method : Delete
 - URL : /api/tasks/{id}
 - Parameter : id (@PathVariabl), pw (@RequestParam)
 - Response : void
@@ -48,15 +48,29 @@
 	- 해당 id를 갖는 할일이 삭제됨
 	- 일정을 등록할 때와 동일한 password 입력시에만, 삭제 가능
 
+**참고사항** : 전체 일정을 조회하는 기능을 제외하고 요구되는 파라미터가 모두 충족되어야 기능이 동작함
+
 **SQL**
+```sql
 DROP TABLE IF EXISTS task;
 CREATE TABLE task
 (
 	id BIGINT AUTO_INCREMENT PRIMARY KEY,
-     	task TEXT,
-     	user VARCHAR(30),
-     	pw VARCHAR(50),
+     	task TEXT NOT NULL,
+     	user VARCHAR(30) NOT NULL,
+     	pw VARCHAR(50) NOT NULL,
      	createdAt DATETIME,
      	modifiedAt DATETIME
 );
-	
+```
+
+
+**ERD**
+- LV0 ~ 2 수행 결과 하나의 테이블(Entity)만이 존재
+
+| IntelliJ | Visual Paradigm Online |
+|----------|------------------------|
+| <img src="https://github.com/user-attachments/assets/94ab0396-0a5d-438c-980a-a36c20b29cb6" width="300"/> | <img src="https://github.com/user-attachments/assets/baf85eb9-2bc8-41bf-96c1-6d27a1edb35b" width="300"/> |
+
+
+

@@ -7,9 +7,9 @@ import java.util.List;
 
 public interface TaskRepository {
     TaskResponseDto save(Task task);
-    Task findTaskByID(Long id);
+    //Task findTaskByID(Long id);
     List<TaskResponseDto> findTaskByDateAndUser(String date, String user);
     int updateTaskAndUser(String pw, String task, String user, Long id);
     int deleteTask(Long id, String pw);
-    //TaskResponseDto findTaskByID(Long id);
+    TaskResponseDto findTaskByID(Long id);
 }

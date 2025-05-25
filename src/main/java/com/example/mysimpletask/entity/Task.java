@@ -19,7 +19,7 @@ public class Task {
 
 
     private final LocalDateTime createdAt = LocalDateTime.now().withNano(0);
-    private LocalDateTime modifiedAt;
+    private LocalDateTime modifiedAt = this.createdAt;
 
     //createMethod 수행 시,
     public Task(String task, String user, String pw){

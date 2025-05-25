@@ -1,9 +1,10 @@
 DROP TABLE IF EXISTS task;
 CREATE TABLE task
-(	id BIGINT AUTO_INCREMENT PRIMARY KEY,
-     task TEXT,
-     user VARCHAR(30),
-     pw VARCHAR(50),
-     createdAt DATETIME,
-     modifiedAt DATETIME
+(
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    task TEXT NOT NULL,
+    user VARCHAR(30) NOT NULL,
+    pw VARCHAR(50) NOT NULL,
+    createdAt DATETIME,
+    modifiedAt DATETIME
 );

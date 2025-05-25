@@ -41,8 +41,9 @@ public class JdbcTemplateTaskRepository implements TaskRepository{
         parameters.put("modifiedAt", task.getCreatedAt());
 
         Number key = jdbcInsert.executeAndReturnKey(new MapSqlParameterSource(parameters));
-        Task createdTask = this.findTaskByID(key.longValue());
-        return new TaskResponseDto(this.findTaskByID(key.longValue()));
+
+        TaskResponseDto createdTask = this.findTaskByID(key.longValue());
+        return createdTask;
     }
 
     @Override
@@ -79,19 +80,13 @@ public class JdbcTemplateTaskRepository implements TaskRepository{
                         "ORDER BY modifiedAt DESC ", taskRowMapperv2(), user, date);
     }
 
-//    @Override
-//    public TaskResponseDto findTaskByID(Long id) {
-//        List<TaskResponseDto> result = jdbcTemplate.query("SELECT * FROM task WHERE id = ?", taskRowMapperv2(), id);
-//        return result.stream().findAny()
-//                .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Does not exists id = " + id));
-//    }
-
     @Override
-    public Task findTaskByID(Long id) {
-        List<Task> result = jdbcTemplate.query("SELECT * FROM task WHERE id = ?", taskRowMapper(), id);
+    public TaskResponseDto findTaskByID(Long id) {
+        List<TaskResponseDto> result = jdbcTemplate.query("SELECT * FROM task WHERE id = ?", taskRowMapperv2(), id);
         return result.stream().findAny()
                 .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Does not exists id = " + id));
     }
+
 
     @Override
     public int updateTaskAndUser(String pw, String task, String user, Long id) {
@@ -121,18 +116,25 @@ public class JdbcTemplateTaskRepository implements TaskRepository{
         };
     }
 
-    private RowMapper<Task> taskRowMapper(){
-        return new RowMapper<Task>() {
-            @Override
-            public Task mapRow(ResultSet rs, int rowNum) throws SQLException {
-                return new Task(
-                        rs.getLong("id"),
-                        rs.getString("task"),
-                        rs.getString("user"),
-                        rs.getTimestamp("modifiedAt").toLocalDateTime()
-                );
-            }
-        };
-    }
+    //    @Override
+//    public Task findTaskByID(Long id) {
+//        List<Task> result = jdbcTemplate.query("SELECT * FROM task WHERE id = ?", taskRowMapper(), id);
+//        return result.stream().findAny()
+//                .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Does not exists id = " + id));
+//    }
+
+//    private RowMapper<Task> taskRowMapper(){
+//        return new RowMapper<Task>() {
+//            @Override
+//            public Task mapRow(ResultSet rs, int rowNum) throws SQLException {
+//                return new Task(
+//                        rs.getLong("id"),
+//                        rs.getString("task"),
+//                        rs.getString("user"),
+//                        rs.getTimestamp("modifiedAt").toLocalDateTime()
+//                );
+//            }
+//        };
+//    }
 
 }
