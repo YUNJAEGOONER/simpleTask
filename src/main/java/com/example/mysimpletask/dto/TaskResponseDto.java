@@ -5,6 +5,9 @@ import com.example.mysimpletask.entity.Task;
 import java.util.Date;
 
 public class TaskResponseDto {
+
+    public Long id;
+
     public String task;
 
     public String user;
@@ -16,25 +19,19 @@ public class TaskResponseDto {
     public Date modifiedAt;
 
     public TaskResponseDto(Task task){
+        this.id = task.getId();
         this.task = task.getTask();
         this.user = task.getUser();
         this.createdAt = task.getCreatedAt();
         this.modifiedAt = task.getModifiedAt();
     }
 
-    public TaskResponseDto(String task, String user, Date createdAt, Date modifiedAt) {
+    public TaskResponseDto(Long id, String task, String user, Date createdAt, Date modifiedAt) {
+        this.id = id;
         this.task = task;
         this.user = user;
         this.createdAt = createdAt;
         this.modifiedAt = modifiedAt;
     }
-
-    public TaskResponseDto(String task, String user, String pw, Date createdAt, Date modifiedAt) {
-        this.task = task;
-        this.user = user;
-        this.createdAt = createdAt;
-        this.modifiedAt = modifiedAt;
-    }
-
 
 }

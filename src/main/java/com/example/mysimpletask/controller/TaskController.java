@@ -30,7 +30,7 @@ public class TaskController {
     //특정 조건(수정일, 작성자명)을 만족하는 모든 일정 가져오기
     @GetMapping
     public ResponseEntity<List<TaskResponseDto>> getTasks(
-            @RequestParam(value = "modifiedAt", required = false) String date, @RequestParam(value = "user", required = false) String user){
+            @RequestParam(value = "date", required = false) String date, @RequestParam(value = "user", required = false) String user){
         return new ResponseEntity<>(taskService.findTaksByDateAndUser(date, user), HttpStatus.OK);
     }
     
@@ -48,8 +48,14 @@ public class TaskController {
             @PathVariable Long id, @ModelAttribute TaskRequestDto dto){
         return new ResponseEntity<>(taskService.modifyUserAndTask(id, dto), HttpStatus.OK);
     }
+    
+    //LV2. 선택한 일정 삭제(Delete)
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteMemo
+            (@PathVariable Long id, @RequestParam(value = "pw") String pw){
+        taskService.deletTask(id, pw);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
-//    @DeleteMapping("/{id}")
-//    public ResponseEntity<Void> deleteMemo(@PathVariable Long id, @Re)
 
 }

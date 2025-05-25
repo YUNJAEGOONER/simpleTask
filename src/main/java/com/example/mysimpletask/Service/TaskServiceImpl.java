@@ -4,9 +4,10 @@ import com.example.mysimpletask.dto.TaskRequestDto;
 import com.example.mysimpletask.dto.TaskResponseDto;
 import com.example.mysimpletask.entity.Task;
 import com.example.mysimpletask.repository.TaskRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
-import java.sql.SQLOutput;
 import java.util.List;
 
 @Service
@@ -26,28 +27,38 @@ public class TaskServiceImpl implements TaskService{
     }
 
     @Override
+    public List<TaskResponseDto> findTaksByDateAndUser(String date, String user) {
+        return taskRepository.findTaskByDateAndUser(date, user);
+    }
+
+    @Override
     public TaskResponseDto findTaskByID(Long id) {
         Task found = taskRepository.findTaskByID(id);
         return new TaskResponseDto(found);
     }
 
     @Override
-    public List<TaskResponseDto> findTaksByDateAndUser(String date, String user) {
-        return taskRepository.findTaskByDateAndUser(date, user);
+    public TaskResponseDto modifyUserAndTask(Long id, TaskRequestDto dto) {
+        Task found = taskRepository.findTaskByID(id); //found에 실패하면 not found throw;
+        
+        int updated = taskRepository.updateTaskAndUser(dto.getPw(), dto.getTask(), dto.getUser(), id);
+        //영향을 받는 row의 수가 0인 경우 -> 비밀번호가 일치하지 않는 경우
+        if(updated == 0){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Incorrect Password!!!");
+        }
+
+        Task task = taskRepository.findTaskByID(id);
+        return new TaskResponseDto(task);
     }
 
     @Override
-    public TaskResponseDto modifyUserAndTask(Long id, TaskRequestDto dto) {
-        Task found = taskRepository.findTaskByID(id);
-
-        int update = taskRepository.updateTaskAndUser(dto.getPw(), dto.getTask(), dto.getUser(), id);
-
-        if(update == 0){
-            //TODO:비밀번호가 일치하지 않는 경우 throw error
-            System.out.println("비밀번호가 일치하지 않습니다.");
+    public void deletTask(Long id, String pw) {
+        Task found = taskRepository.findTaskByID(id); // found에 실패하면 not found throw;
+        int deleted = taskRepository.deleteTask(id, pw);
+        if(deleted == 0){
+            //비밀번호가 일치하지 않는 경우
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Incorrect Password!!!");
         }
-        Task task = taskRepository.findTaskByID(id);
-        return new TaskResponseDto(task);
     }
 
 }

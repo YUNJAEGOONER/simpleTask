@@ -26,10 +26,10 @@ public class JdbcTemplateTaskRepository implements TaskRepository{
         this.jdbcTemplate = jdbcTemplate;
     }
 
-
     @Override
     public TaskResponseDto save(Task task) {
         SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate);
+
         //table이름 명시
         jdbcInsert.withTableName("task").usingGeneratedKeyColumns("id");
 
@@ -44,8 +44,49 @@ public class JdbcTemplateTaskRepository implements TaskRepository{
         parameters.put("modifiedAt", now);
 
         Number key = jdbcInsert.executeAndReturnKey(new MapSqlParameterSource(parameters));
-        return null;
+        return new TaskResponseDto(key.longValue(), task.getTask(), task.getUser(), task.getCreatedAt(), task.getModifiedAt());
     }
+
+    @Override
+    public List<TaskResponseDto> findTaskByDateAndUser(String date, String user) {
+        //[공통] 수정일을 기준으로 내림차순
+        //사용자를 통한 검색
+        if(date == null && user != null){
+            return jdbcTemplate.query(
+                    "SELECT * " +
+                            "FROM task " +
+                            "WHERE user = ?" +
+                            "ORDER BY modifiedAt DESC ", taskRowMapperv2(), user);
+        }
+        //수정일을 통한 검색
+        else if(date != null && user == null){
+            return jdbcTemplate.query(
+                    "SELECT * " +
+                            "FROM task " +
+                            "WHERE DATE_FORMAT(modifiedAt, '%Y-%m-%d') = ?" +
+                            "ORDER BY modifiedAt DESC ", taskRowMapperv2(), date);
+        }
+        //수정일, 사용자 모두 전달되지 않은 경우
+        else if(date == null && user == null){
+            return jdbcTemplate.query(
+                    "SELECT * " +
+                            "FROM task " +
+                            "ORDER BY modifiedAt DESC ", taskRowMapperv2());
+        }
+        //수정일, 사용자 모두 전달된 경우
+        return jdbcTemplate.query(
+                "SELECT * " +
+                        "FROM task " +
+                        "WHERE user = ? AND DATE_FORMAT(modifiedAt, '%Y-%m-%d') = ?" +
+                        "ORDER BY modifiedAt DESC ", taskRowMapperv2(), user, date);
+    }
+
+//    @Override
+//    public TaskResponseDto findTaskByID(Long id) {
+//        List<TaskResponseDto> result = jdbcTemplate.query("SELECT * FROM task WHERE id = ?", taskRowMapperv2(), id);
+//        return result.stream().findAny()
+//                .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Does not exists id = " + id));
+//    }
 
     @Override
     public Task findTaskByID(Long id) {
@@ -55,40 +96,31 @@ public class JdbcTemplateTaskRepository implements TaskRepository{
     }
 
     @Override
-    public List<TaskResponseDto> findTaskByDateAndUser(String date, String user) {
-        if(date == null && user != null){
-            return jdbcTemplate.query(
-                    "SELECT * " +
-                    "FROM task " +
-                    "WHERE user = ?" +
-                    "ORDER BY modifiedAt DESC ", taskRowMapperv2(), user);
-        }
-        else if(date != null && user == null){
-            return jdbcTemplate.query(
-                    "SELECT * " +
-                    "FROM task " +
-                    "WHERE DATE_FORMAT(modifiedAt, '%Y-%m-%d') = ?" +
-                    "ORDER BY modifiedAt DESC ", taskRowMapperv2(), date);
-        }
-        else if(date == null && user == null){
-            return jdbcTemplate.query(
-                    "SELECT * " +
-                    "FROM task " +
-                    "ORDER BY modifiedAt DESC ", taskRowMapperv2());
-        }
-        return jdbcTemplate.query(
-                "SELECT * " +
-                "FROM task " +
-                "WHERE user = ? AND DATE_FORMAT(modifiedAt, '%Y-%m-%d') = ?" +
-                "ORDER BY modifiedAt DESC ", taskRowMapperv2(), user, date);
+    public int updateTaskAndUser(String pw, String task, String user, Long id) {
+        Date now = new Date();
+        int updatedRow = jdbcTemplate.update("UPDATE task SET task = ?, user = ?, modifiedAt =? " +
+                "WHERE id = ? AND pw = ?", task, user, now, id, pw);
+        return updatedRow;
     }
 
     @Override
-    public int updateTaskAndUser(String pw, String task, String user, Long id) {
-        Date now = new Date();
-        int updatedrow = jdbcTemplate.update("UPDATE task SET user = ?, task = ?, modifiedAt =? " +
-                "WHERE id = ? AND pw = ?", task, user, now, id, pw);
-        return updatedrow;
+    public int deleteTask(Long id, String pw) {
+        return jdbcTemplate.update("DELETE FROM task where id = ? AND pw = ?", id, pw);
+    }
+
+    private RowMapper<TaskResponseDto> taskRowMapperv2(){
+        return new RowMapper<TaskResponseDto>() {
+            @Override
+            public TaskResponseDto mapRow(ResultSet rs, int rowNum) throws SQLException {
+                return new TaskResponseDto(
+                        rs.getLong("id"),
+                        rs.getString("task"),
+                        rs.getString("user"),
+                        rs.getDate("createdAt"),
+                        rs.getDate("modifiedAt")
+                );
+            }
+        };
     }
 
     private RowMapper<Task> taskRowMapper(){
@@ -105,23 +137,5 @@ public class JdbcTemplateTaskRepository implements TaskRepository{
             }
         };
     }
-
-    private RowMapper<TaskResponseDto> taskRowMapperv2(){
-        return new RowMapper<TaskResponseDto>() {
-            @Override
-            public TaskResponseDto mapRow(ResultSet rs, int rowNum) throws SQLException {
-                return new TaskResponseDto(
-                        rs.getString("task"),
-                        rs.getString("user"),
-                        rs.getDate("createdAt"),
-                        rs.getDate("modifiedAt")
-                );
-            }
-        };
-    }
-
-
-
-
 
 }
