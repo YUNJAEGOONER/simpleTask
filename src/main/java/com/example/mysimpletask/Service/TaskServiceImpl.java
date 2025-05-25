@@ -52,7 +52,7 @@ public class TaskServiceImpl implements TaskService{
     }
 
     @Override
-    public void deletTask(Long id, String pw) {
+    public void deleteTask(Long id, String pw) {
         Task found = taskRepository.findTaskByID(id); // found에 실패하면 not found throw;
         int deleted = taskRepository.deleteTask(id, pw);
         if(deleted == 0){

@@ -53,7 +53,7 @@ public class TaskController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteMemo
             (@PathVariable Long id, @RequestParam(value = "pw") String pw){
-        taskService.deletTask(id, pw);
+        taskService.deleteTask(id, pw);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

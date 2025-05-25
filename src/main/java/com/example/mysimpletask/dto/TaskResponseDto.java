@@ -1,22 +1,23 @@
 package com.example.mysimpletask.dto;
 
 import com.example.mysimpletask.entity.Task;
+import lombok.Getter;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Date;
 
+@Getter
 public class TaskResponseDto {
 
-    public Long id;
+    private Long id;
 
-    public String task;
+    private String task;
 
-    public String user;
+    private String user;
 
-//    public Timestamp createdAt;
-//    public Timestamp modifiedAt;
-
-    public Date createdAt;
-    public Date modifiedAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime modifiedAt;
 
     public TaskResponseDto(Task task){
         this.id = task.getId();
@@ -26,7 +27,7 @@ public class TaskResponseDto {
         this.modifiedAt = task.getModifiedAt();
     }
 
-    public TaskResponseDto(Long id, String task, String user, Date createdAt, Date modifiedAt) {
+    public TaskResponseDto(Long id, String task, String user, LocalDateTime createdAt, LocalDateTime modifiedAt) {
         this.id = id;
         this.task = task;
         this.user = user;

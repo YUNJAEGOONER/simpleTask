@@ -9,18 +9,17 @@ import java.util.Date;
 public class Task {
 
     //PK
-    public Long id;
+    private Long id;
 
-    public String task;
+    private String task;
 
-    public String user;
+    private String user;
 
-    public String pw;
+    private String pw;
 
-//    public Timestamp createdAt;
-//    public Timestamp modifiedAt;
-    public Date createdAt;
-    public Date modifiedAt;
+
+    private final LocalDateTime createdAt = LocalDateTime.now().withNano(0);
+    private LocalDateTime modifiedAt;
 
     //createMethod 수행 시,
     public Task(String task, String user, String pw){
@@ -29,11 +28,11 @@ public class Task {
         this.pw = pw;
     }
 
-    public Task(long id, String task, String user, Date createdAt, Date modifiedAt) {
+    public Task(long id, String task, String user, LocalDateTime modifiedAt) {
         this.id = id;
         this.task = task;
         this.user = user;
-        this.createdAt = createdAt;
         this.modifiedAt = modifiedAt;
     }
+
 }

@@ -37,14 +37,12 @@ public class JdbcTemplateTaskRepository implements TaskRepository{
         parameters.put("task", task.getTask());
         parameters.put("user", task.getUser());
         parameters.put("pw", task.getPw());
-
-        //현재시간
-        Date now = new Date();
-        parameters.put("createdAt", now);
-        parameters.put("modifiedAt", now);
+        parameters.put("createdAt", task.getCreatedAt());
+        parameters.put("modifiedAt", task.getCreatedAt());
 
         Number key = jdbcInsert.executeAndReturnKey(new MapSqlParameterSource(parameters));
-        return new TaskResponseDto(key.longValue(), task.getTask(), task.getUser(), task.getCreatedAt(), task.getModifiedAt());
+        Task createdTask = this.findTaskByID(key.longValue());
+        return new TaskResponseDto(this.findTaskByID(key.longValue()));
     }
 
     @Override
@@ -116,8 +114,8 @@ public class JdbcTemplateTaskRepository implements TaskRepository{
                         rs.getLong("id"),
                         rs.getString("task"),
                         rs.getString("user"),
-                        rs.getDate("createdAt"),
-                        rs.getDate("modifiedAt")
+                        rs.getTimestamp("createdAt").toLocalDateTime(),
+                        rs.getTimestamp("modifiedAt").toLocalDateTime()
                 );
             }
         };
@@ -131,8 +129,7 @@ public class JdbcTemplateTaskRepository implements TaskRepository{
                         rs.getLong("id"),
                         rs.getString("task"),
                         rs.getString("user"),
-                        rs.getDate("createdAt"),
-                        rs.getDate("modifiedAt")
+                        rs.getTimestamp("modifiedAt").toLocalDateTime()
                 );
             }
         };
