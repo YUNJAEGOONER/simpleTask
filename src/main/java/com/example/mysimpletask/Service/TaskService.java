@@ -11,4 +11,5 @@ public interface TaskService {
     TaskResponseDto findTaskByID(Long id);
     List<TaskResponseDto> findTaksByDateAndUser(String date, String user);
     TaskResponseDto modifyUserAndTask(Long id, TaskRequestDto dto);
+    void deletTask(Long id, String pw);
 }
