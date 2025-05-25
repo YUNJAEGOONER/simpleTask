@@ -50,7 +50,6 @@ public class JdbcTemplateTaskRepository implements TaskRepository{
     @Override
     public Task findTaskByID(Long id) {
         List<Task> result = jdbcTemplate.query("SELECT * FROM task WHERE id = ?", taskRowMapper(), id);
-        System.out.println("size =" + result.size());
         return result.stream().findAny()
                 .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Does not exists id = " + id));
     }
@@ -84,6 +83,13 @@ public class JdbcTemplateTaskRepository implements TaskRepository{
                 "ORDER BY modifiedAt DESC ", taskRowMapperv2(), user, date);
     }
 
+    @Override
+    public int updateTaskAndUser(String pw, String task, String user, Long id) {
+        Date now = new Date();
+        int updatedrow = jdbcTemplate.update("UPDATE task SET user = ?, task = ?, modifiedAt =? " +
+                "WHERE id = ? AND pw = ?", task, user, now, id, pw);
+        return updatedrow;
+    }
 
     private RowMapper<Task> taskRowMapper(){
         return new RowMapper<Task>() {
@@ -113,6 +119,8 @@ public class JdbcTemplateTaskRepository implements TaskRepository{
             }
         };
     }
+
+
 
 
 

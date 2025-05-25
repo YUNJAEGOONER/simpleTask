@@ -28,4 +28,13 @@ public class TaskResponseDto {
         this.createdAt = createdAt;
         this.modifiedAt = modifiedAt;
     }
+
+    public TaskResponseDto(String task, String user, String pw, Date createdAt, Date modifiedAt) {
+        this.task = task;
+        this.user = user;
+        this.createdAt = createdAt;
+        this.modifiedAt = modifiedAt;
+    }
+
+
 }

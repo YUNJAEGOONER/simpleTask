@@ -19,22 +19,34 @@ public class TaskController {
         this.taskService = taskService;
     }
 
+    //LV1.일정 생성 (Create)
+    //HTML Form을 통한 입력 받기
     @PostMapping
     public ResponseEntity<TaskResponseDto> createTask(@ModelAttribute TaskRequestDto dto){
         return new ResponseEntity<>(taskService.saveTask(dto), HttpStatus.CREATED);
     }
 
+    //LV1. 전체 일정 조회(Read)
+    //특정 조건(수정일, 작성자명)을 만족하는 모든 일정 가져오기
     @GetMapping
     public ResponseEntity<List<TaskResponseDto>> getTasks(
             @RequestParam(value = "modifiedAt", required = false) String date, @RequestParam(value = "user", required = false) String user){
         return new ResponseEntity<>(taskService.findTaksByDateAndUser(date, user), HttpStatus.OK);
     }
-
-
+    
+    //LV1. 선택한 일정 조회(Read)
     //고유 식별자를 사용한 일정 조회
     @GetMapping("/{id}")
     public ResponseEntity<TaskResponseDto> findTaskByID(@PathVariable Long id){
         return new ResponseEntity<>(taskService.findTaskByID(id), HttpStatus.OK);
+    }
+    
+    //LV2. 선택한 일정 수정(Update)
+    //일부 내역만을 수정 -> patch
+    @PatchMapping("/{id}")
+    public ResponseEntity<TaskResponseDto> modifyUserAndTask(
+            @PathVariable Long id, @ModelAttribute TaskRequestDto dto){
+        return new ResponseEntity<>(taskService.modifyUserAndTask(id, dto), HttpStatus.OK);
     }
 
 //    @DeleteMapping("/{id}")
